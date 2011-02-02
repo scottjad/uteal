@@ -37,3 +37,15 @@ ex. (let [a nil] (nil-safe a (.length a))) => nil instead of NPE cause (.length 
 ;;   `(try (var? (var ~sym))
 ;;         (catch Exception ~'e
 ;;           false)))
+
+(defmacro when-hash
+  "Ex. (when-hash a) => (when a {:a a})"
+  [x]
+  `(when ~x {~(keyword x) ~x}))
+
+(defmacro as-hash
+  "Ex. (as-hash :a :b) => {:a a :b b}"
+  [& xs]
+  (apply hash-map
+         (interleave (map keyword xs)
+                     xs)))

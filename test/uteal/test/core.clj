@@ -30,3 +30,9 @@
        2)))
 
 (fact (guard even? 2 :not-even) 2)
+
+(let [a 1]
+  (fact (when-hash a) (when a {:a a})))
+
+(let [a 1, b 2]
+  (fact (as-hash a b) {:a a :b b}))
