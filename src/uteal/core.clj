@@ -25,7 +25,7 @@ ex. (let [a nil] (nil-safe a (.length a))) => nil instead of NPE cause (.length 
 
 ;;; from twoguysarguing
 (defmacro guard
-  "tests `then` with `pred` and returns `then` ro `else`"
+  "tests `then` with `pred` and returns `then` or `else`"
   [pred then else]
   `(let [x# ~then]
      (if (~pred x#)
@@ -44,8 +44,33 @@ ex. (let [a nil] (nil-safe a (.length a))) => nil instead of NPE cause (.length 
   `(when ~x {~(keyword x) ~x}))
 
 (defmacro as-hash
-  "Ex. (as-hash :a :b) => {:a a :b b}"
+  "Ex. (as-hash a b) => {:a a :b b}"
   [& xs]
   (apply hash-map
          (interleave (map keyword xs)
                      xs)))
+
+(defmacro throw-exception [s]
+  `(throw (Exception. ~s)))
+
+(defmacro wtf [s]
+  `(throw-exception ~s))
+
+;;; from fail with me blog
+(defmacro dlet [bindings & body]
+  `(let [~@(mapcat (fn [[n v]]
+                     (if (or (vector? n) (map? n))
+                       [n v]
+                       [n v '_ `(println (name '~n) " : " ~n)]))
+                   (partition 2 bindings))]
+     ~@body))
+
+;;; from fogus evalive
+(defmacro lexical-context
+  "ex. use in let as (print (lexical-context)) to see map of locals => values"
+  []
+  (let [symbols (keys &env)]
+    (zipmap (map (fn [sym] `(quote ~sym))
+                 symbols)
+            symbols)))
+

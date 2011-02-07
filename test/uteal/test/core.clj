@@ -36,3 +36,4 @@
 
 (let [a 1, b 2]
   (fact (as-hash a b) {:a a :b b}))
+
